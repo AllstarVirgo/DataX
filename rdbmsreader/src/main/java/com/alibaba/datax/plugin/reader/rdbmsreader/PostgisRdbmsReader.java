@@ -19,11 +19,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Objects;
 
-public class PostgisReader extends CommonRdbmsReader {
+public class PostgisRdbmsReader extends CommonRdbmsReader {
 
-    static {
-        DBUtil.loadDriverClass("reader", "rdbms");
-    }
+//    static {
+//        DBUtil.loadDriverClass("reader", "rdbms");
+//    }
 
     public static class Job extends CommonRdbmsReader.Job {
 
@@ -39,6 +39,10 @@ public class PostgisReader extends CommonRdbmsReader {
 
         public Task(DataBaseType dataBaseType) {
             super(dataBaseType);
+        }
+
+        public Task(DataBaseType dataBaseType, int taskGropuId, int taskId) {
+            super(dataBaseType, taskGropuId, taskId);
         }
 
         @Override
@@ -133,7 +137,7 @@ public class PostgisReader extends CommonRdbmsReader {
                         //case Types.TIMESTAMP_WITH_TIMEZONE:
                         //    record.addColumn(new StringColumn(rs.getString(i)));
                         //    break;
-                        case Types.JAVA_OBJECT:
+                        case Types.OTHER:
                             Object object = rs.getObject(i);
                             if(Objects.nonNull(object)) {
                                 String columnTypeName = metaData.getColumnTypeName(i);

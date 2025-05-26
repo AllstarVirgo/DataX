@@ -8,6 +8,7 @@ import com.alibaba.datax.plugin.rdbms.util.DBUtilErrorCode;
 import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
 import com.alibaba.datax.plugin.rdbms.writer.CommonRdbmsWriter;
 import com.alibaba.datax.plugin.rdbms.writer.Key;
+import com.alibaba.datax.plugin.reader.rdbmswriter.PostgisRdbmsWriter;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class PostgresqlWriter extends Writer {
 					String.format("写入模式(writeMode)配置有误. 因为PostgreSQL不支持配置参数项 writeMode: %s, PostgreSQL仅使用insert sql 插入数据. 请检查您的配置并作出修改.", writeMode));
 			}
 
-			this.commonRdbmsWriterMaster = new CommonRdbmsWriter.Job(DATABASE_TYPE);
+			this.commonRdbmsWriterMaster = new PostgisRdbmsWriter.Job(DATABASE_TYPE);
 			this.commonRdbmsWriterMaster.init(this.originalConfig);
 		}
 
@@ -62,7 +63,7 @@ public class PostgresqlWriter extends Writer {
 		@Override
 		public void init() {
 			this.writerSliceConfig = super.getPluginJobConf();
-			this.commonRdbmsWriterSlave = new CommonRdbmsWriter.Task(DATABASE_TYPE){
+			this.commonRdbmsWriterSlave = new PostgisRdbmsWriter.Task(DATABASE_TYPE){
 				@Override
 				public String calcValueHolder(String columnType){
 					if("serial".equalsIgnoreCase(columnType)){

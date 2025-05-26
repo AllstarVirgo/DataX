@@ -7,6 +7,7 @@ import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.plugin.rdbms.reader.CommonRdbmsReader;
 import com.alibaba.datax.plugin.rdbms.util.DBUtilErrorCode;
 import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
+import com.alibaba.datax.plugin.reader.rdbmsreader.PostgisRdbmsReader;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class PostgresqlReader extends Reader {
             }
             this.originalConfig.set(com.alibaba.datax.plugin.rdbms.reader.Constant.FETCH_SIZE, fetchSize);
 
-            this.commonRdbmsReaderMaster = new CommonRdbmsReader.Job(DATABASE_TYPE);
+            this.commonRdbmsReaderMaster = new PostgisRdbmsReader.Job(DATABASE_TYPE);
             this.commonRdbmsReaderMaster.init(this.originalConfig);
         }
 
@@ -59,7 +60,7 @@ public class PostgresqlReader extends Reader {
         @Override
         public void init() {
             this.readerSliceConfig = super.getPluginJobConf();
-            this.commonRdbmsReaderSlave = new CommonRdbmsReader.Task(DATABASE_TYPE,super.getTaskGroupId(), super.getTaskId());
+            this.commonRdbmsReaderSlave = new PostgisRdbmsReader.Task(DATABASE_TYPE,super.getTaskGroupId(), super.getTaskId());
             this.commonRdbmsReaderSlave.init(this.readerSliceConfig);
         }
 

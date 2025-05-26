@@ -13,11 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-public class PostgisWriter extends CommonRdbmsWriter {
+public class PostgisRdbmsWriter extends CommonRdbmsWriter {
 
-    static {
-        DBUtil.loadDriverClass("writer", "rdbms");
-    }
+//    static {
+//        DBUtil.loadDriverClass("writer", "rdbms");
+//    }
 
     public static class Job extends CommonRdbmsWriter.Job {
         public Job(DataBaseType dataBaseType) {
@@ -154,7 +154,7 @@ public class PostgisWriter extends CommonRdbmsWriter {
                                     column.asString());
                         }
                         break;
-                    case Types.JAVA_OBJECT:
+                    case Types.OTHER:
                         if (null == column.getRawData()) {
                             preparedStatement.setNull(columnIndex + 1, Types.JAVA_OBJECT);
                         } else {
