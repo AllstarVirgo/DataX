@@ -1,19 +1,20 @@
 package com.alibaba.datax.plugin.reader.rdbmsreader;
 
 import com.alibaba.datax.common.element.*;
-import com.alibaba.datax.common.element.Record;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordSender;
 import com.alibaba.datax.common.plugin.TaskPluginCollector;
 import com.alibaba.datax.plugin.rdbms.reader.CommonRdbmsReader;
-import com.alibaba.datax.plugin.rdbms.util.DBUtil;
 import com.alibaba.datax.plugin.rdbms.util.DBUtilErrorCode;
 import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
 import com.alibaba.fastjson2.JSON;
 import org.apache.commons.lang3.StringUtils;
+import org.postgis.PGgeometry;
+import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
@@ -137,13 +138,28 @@ public class PostgisRdbmsReader extends CommonRdbmsReader {
                         //case Types.TIMESTAMP_WITH_TIMEZONE:
                         //    record.addColumn(new StringColumn(rs.getString(i)));
                         //    break;
+                        case Types.ARRAY:
+                            Object arrayObject = rs.getObject(i);
+                            Array dataArray = (Array)arrayObject;
+                            PostgisWrapper postgisWrapperForArray = new PostgisWrapper();
+                            postgisWrapperForArray.setColumnTypeName(dataArray.getBaseTypeName());
+                            postgisWrapperForArray.setRawData(dataArray.toString());
+                            record.addColumn(new BytesColumn(JSON.toJSONBytes(postgisWrapperForArray)));
+                            break;
                         case Types.OTHER:
                             Object object = rs.getObject(i);
                             if(Objects.nonNull(object)) {
                                 String columnTypeName = metaData.getColumnTypeName(i);
                                 PostgisWrapper postgisWrapper = new PostgisWrapper();
                                 postgisWrapper.setColumnTypeName(columnTypeName);
-                                postgisWrapper.setRawData(object);
+                                if(object instanceof PGgeometry) {
+                                    //PGgeometry can't be serialized directly, need to convert to WKT
+                                    postgisWrapper.setRawData(object.toString());
+                                } else if ( object instanceof PGobject){
+                                    postgisWrapper.setRawData(JSON.toJSONString(object));
+                                } else {
+                                    throw new IllegalStateException("Unsupported PostGIS type: " + object.getClass().getName());
+                                }
                                 record.addColumn(
                                         new BytesColumn(JSON.toJSONBytes(postgisWrapper))
                                 );

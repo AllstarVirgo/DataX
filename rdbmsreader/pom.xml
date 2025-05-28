@@ -69,7 +69,11 @@
 			<artifactId>plugin-rdbms-util</artifactId>
 			<version>${datax-project-version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>net.postgis</groupId>
+			<artifactId>postgis-jdbc</artifactId>
+			<version>2.5.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
